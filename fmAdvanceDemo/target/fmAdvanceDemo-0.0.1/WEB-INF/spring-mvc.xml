@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- @ResponseBody中文支持 -->
+	<bean
+	   class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	   <property name="messageConverters">
+	         <list>
+	             <bean class = "org.springframework.http.converter.StringHttpMessageConverter">
+	                <property name = "supportedMediaTypes">
+	                     <list>
+	                         <value>text/plain;charset=UTF-8</value>
+	                     </list>
+	                </property>
+	             </bean>
+	         </list>
+	   </property>
+	</bean>
+	<!-- 自动扫描且只扫描@Controller -->
+	<context:component-scan base-package="com.devsai.fm.web.*"
+		use-default-filters="false">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Component" />
+	</context:component-scan>
+
+	
+	<mvc:annotation-driven />
+
+	<mvc:default-servlet-handler />
+
+	<!-- 定义首页 
+	<mvc:view-controller path="/" view-name="redirect:/index.fhtml" />
+-->
+	<!-- 定义视图 -->
+	<import resource="freemarker.xml"/>
+	
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+	    <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+	    <property name="viewNames" value="*.ftl"/>
+	    <property name="contentType" value="text/html; charset=utf-8"/>
+	    <property name="cache" value="true" />
+	    <property name="prefix" value="" />
+	    <property name="suffix" value="" />
+	    <property name="order" value="2"/>
+	</bean>
+
+
+
+	<!-- JSR303 Validator定义 -->
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 以字节为单位的最大上传文件的大小 -->
+		<property name="maxUploadSize" value="1024000000" />
+		<property name="maxInMemorySize" value="4096" />
+		<property name="defaultEncoding" value="utf-8" />
+	</bean>
+
+	<!-- 对某些静态资源，如css,图片等进行过滤 ,有引用 "/js/**" 的路径引用转到工程的/js/目录取资源 -->
+	<mvc:resources mapping="/static/**" location="/static/" />
+	
+</beans>
